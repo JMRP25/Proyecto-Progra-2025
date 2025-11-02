@@ -1,0 +1,10 @@
+com\mycompany\GreetingResource.class
+com\mycompany\Controller\clienteController.class
+com\mycompany\model\Clientes.class
+com\mycompany\MyEntity.class
+META-INF\panache-archive.marker
+com\mycompany\Controller\vendedoresController.class
+com\mycompany\repositorio\ClienteRepositorio.class
+com\mycompany\repositorio\VendedoresRepositorio.class
+com\mycompany\model\Vendedores.class
+com\mycompany\MyEntityResource.class

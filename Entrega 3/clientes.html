@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Clientes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .btn-agregar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 20px;
+    }
+
+    .btn-agregar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-guardar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-guardar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-cancelar {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-cancelar:hover {
+      background: #da190b;
+      transform: translateY(-2px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    tbody tr {
+      transition: background-color 0.2s;
+    }
+
+    tbody tr:hover {
+      background-color: #f8f9ff;
+    }
+
+    .btn-accion {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-editar {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-editar:hover {
+      background: #0b7dda;
+      transform: scale(1.05);
+    }
+
+    .btn-eliminar {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-eliminar:hover {
+      background: #da190b;
+      transform: scale(1.05);
+    }
+
+    .mensaje {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .mensaje.exito {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .mensaje.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📋 Gestión de Clientes</h1>
+      <p>Sistema de administración de clientes</p>
+    </header>
+
+    <div class="content">
+      <button class="btn-agregar" onclick="abrirModal()">➕ Agregar Nuevo Cliente</button>
+      
+      <div id="mensaje" class="mensaje"></div>
+
+      <table id="tablaClientes">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>NIT</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr>
+            <td colspan="7" class="empty-state">
+              <div>Cargando clientes...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal para agregar/editar cliente -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h2 id="modalTitulo">Agregar Nuevo Cliente</h2>
+      <form id="formCliente" onsubmit="guardarCliente(event)">
+        <input type="hidden" id="idCliente">
+        
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" required>
+        </div>
+
+        <div class="form-group">
+          <label for="apellido">Apellido:</label>
+          <input type="text" id="apellido" required>
+        </div>
+
+        <div class="form-group">
+          <label for="nit">NIT:</label>
+          <input type="text" id="nit" required>
+        </div>
+
+        <div class="form-group">
+          <label for="telefono">Teléfono:</label>
+          <input type="tel" id="telefono" required>
+        </div>
+
+        <div class="form-group">
+          <label for="direccion">Dirección:</label>
+          <input type="text" id="direccion" required>
+        </div>
+
+        <div class="form-buttons">
+          <button type="submit" class="btn btn-guardar">💾 Guardar</button>
+          <button type="button" class="btn btn-cancelar" onclick="cerrarModal()">✖ Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:8080/clientes';
+    let clientes = [];
+
+    // Cargar clientes al iniciar
+    window.onload = () => {
+      cargarClientes();
+    };
+
+    // Función para cargar clientes
+    async function cargarClientes() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        if (data.Clientes) {
+          clientes = data.Clientes;
+          renderizarTabla();
+        }
+      } catch (error) {
+        mostrarMensaje('Error al cargar clientes: ' + error.message, 'error');
+      }
+    }
+
+    // Renderizar tabla
+    function renderizarTabla() {
+      const tbody = document.getElementById('tbody');
+      
+      if (clientes.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty-state">
+              <div>
+                <p style="font-size: 24px; margin-bottom: 10px;">📭</p>
+                <p>No hay clientes registrados</p>
+                <p style="font-size: 14px; color: #999; margin-top: 5px;">Agrega tu primer cliente usando el botón de arriba</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = clientes.map(cliente => `
+        <tr>
+          <td>${cliente.id_cliente || cliente.idCliente || 'N/A'}</td>
+          <td>${cliente.nombre || ''}</td>
+          <td>${cliente.apellido || ''}</td>
+          <td>${cliente.nit || ''}</td>
+          <td>${cliente.telefono || ''}</td>
+          <td>${cliente.direccion || ''}</td>
+          <td>
+            <button class="btn-accion btn-editar" onclick="editarCliente(${cliente.id_cliente || cliente.idCliente})">✏️ Editar</button>
+            <button class="btn-accion btn-eliminar" onclick="eliminarCliente(${cliente.id_cliente || cliente.idCliente})">🗑️ Eliminar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Abrir modal
+    function abrirModal(cliente = null) {
+      const modal = document.getElementById('modal');
+      const titulo = document.getElementById('modalTitulo');
+      const form = document.getElementById('formCliente');
+      
+      if (cliente) {
+        titulo.textContent = 'Editar Cliente';
+        document.getElementById('idCliente').value = cliente.id_cliente || cliente.idCliente;
+        document.getElementById('nombre').value = cliente.nombre;
+        document.getElementById('apellido').value = cliente.apellido;
+        document.getElementById('nit').value = cliente.nit;
+        document.getElementById('telefono').value = cliente.telefono;
+        document.getElementById('direccion').value = cliente.direccion;
+      } else {
+        titulo.textContent = 'Agregar Nuevo Cliente';
+        form.reset();
+        document.getElementById('idCliente').value = '';
+      }
+      
+      modal.style.display = 'block';
+    }
+
+    // Cerrar modal
+    function cerrarModal() {
+      document.getElementById('modal').style.display = 'none';
+      document.getElementById('formCliente').reset();
+    }
+
+    // Guardar cliente
+    async function guardarCliente(event) {
+      event.preventDefault();
+      
+      const idCliente = document.getElementById('idCliente').value;
+      const cliente = {
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        nit: document.getElementById('nit').value,
+        telefono: document.getElementById('telefono').value,
+        direccion: document.getElementById('direccion').value
+      };
+
+      try {
+        let response;
+        if (idCliente) {
+          // Actualizar cliente existente
+          cliente.id_cliente = parseInt(idCliente);
+          response = await fetch(`${API_URL}/${idCliente}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cliente)
+          });
+        } else {
+          // Crear nuevo cliente
+          response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cliente)
+          });
+        }
+
+        if (response.ok) {
+          mostrarMensaje(
+            idCliente ? 'Cliente actualizado exitosamente' : 'Cliente creado exitosamente',
+            'exito'
+          );
+          cerrarModal();
+          cargarClientes();
+        } else {
+          throw new Error('Error al guardar el cliente');
+        }
+      } catch (error) {
+        mostrarMensaje('Error: ' + error.message, 'error');
+      }
+    }
+
+    // Editar cliente
+    function editarCliente(id) {
+      const cliente = clientes.find(c => (c.id_cliente || c.idCliente) === id);
+      if (cliente) {
+        abrirModal(cliente);
+      }
+    }
+
+    // Eliminar cliente
+    async function eliminarCliente(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar este cliente?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          mostrarMensaje('Cliente eliminado exitosamente', 'exito');
+          cargarClientes();
+        } else {
+          throw new Error('Error al eliminar el cliente');
+        }
+      } catch (error) {
+        mostrarMensaje('Error: ' + error.message, 'error');
+      }
+    }
+
+    // Mostrar mensaje
+    function mostrarMensaje(texto, tipo) {
+      const mensaje = document.getElementById('mensaje');
+      mensaje.textContent = texto;
+      mensaje.className = `mensaje ${tipo}`;
+      mensaje.style.display = 'block';
+      
+      setTimeout(() => {
+        mensaje.style.display = 'none';
+      }, 4000);
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = (event) => {
+      const modal = document.getElementById('modal');
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    };
+  </script>
+</body>
+</html>

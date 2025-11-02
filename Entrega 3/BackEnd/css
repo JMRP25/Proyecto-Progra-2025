@@ -1,0 +1,14 @@
+css/style.css
+ body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    color: #3333cc;
+}
+
+#resultado {
+    margin-top: 20px;
+    color: green;
+}
